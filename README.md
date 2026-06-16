@@ -64,5 +64,5 @@ A custom-built, dependency-free vanilla frontend leveraging modern CSS architect
 
 ### 1. Clone the Repository
 ```bash
-git clone [https://github.com/yourusername/intelligent-workspace.git](https://github.com/rishikodaganur/intelligent-workspace.git)
+git clone [https://github.com/rishikodaganur/intelligent-workspace.git](https://github.com/rishikodaganur/intelligent-workspace.git)
 cd intelligent-workspace
