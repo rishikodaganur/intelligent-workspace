@@ -7,6 +7,9 @@ WORKDIR /app
 # Copy the pom.xml and the wrapper files
 COPY . .
 
+# ---> THE FIX: Grant execution rights to the Maven wrapper <---
+RUN chmod +x mvnw
+
 # Build the application
 RUN ./mvnw clean package -DskipTests
 
