@@ -8,14 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/upload")
+// Notice I removed the @RequestMapping from the class level
 public class FileUploadController {
 
     private final CloudinaryStorageService cloudinaryService;
     private final VisionAiService visionAiService;
     private final DocumentParserService documentParserService;
 
-    // UPGRADED: Added DocumentParserService to the constructor
     public FileUploadController(CloudinaryStorageService cloudinaryService,
             VisionAiService visionAiService,
             DocumentParserService documentParserService) {
@@ -24,7 +23,8 @@ public class FileUploadController {
         this.documentParserService = documentParserService;
     }
 
-    @PostMapping
+    // THE FIX: Highly specific endpoint path that won't collide with anything
+    @PostMapping("/api/v1/upload")
     public ResponseEntity<Map<String, String>> handleFileUpload(
             @RequestParam("file") MultipartFile file,
             @RequestParam(value = "roomId", required = false) String roomId) {

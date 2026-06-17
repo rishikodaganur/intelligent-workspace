@@ -3154,7 +3154,7 @@ body.light-mode #lobby-container h2 {
             formData.append('roomId', currentRoom);
 
             try {
-                const response = await fetch('/api/upload', {
+                const response = await fetch('/api/v1/upload', {
                     method: 'POST',
                     body: formData
                 });
