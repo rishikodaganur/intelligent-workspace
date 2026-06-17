@@ -9,7 +9,7 @@
 
 A production-ready, real-time AI collaboration environment. This application bridges a premium glassmorphic frontend with a highly concurrent Spring Boot backend, featuring intelligent dual-model routing, live WebSockets, and a custom Retrieval-Augmented Generation (RAG) pipeline powered by PostgreSQL's `pgvector`.
 
-**[🔗 Access the Live Server]** *(<- Link your Railway/Render deployment here once live)*
+**[🔗 [Access the Live Server](https://intelligent-workspace.onrender.com)]** 
 
 ---
 
