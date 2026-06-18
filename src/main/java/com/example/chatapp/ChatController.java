@@ -85,18 +85,11 @@ public class ChatController {
 
             // 3. Route the Request
             if (isDocumentQuery && hasDocuments) {
-                // For RAG, we stick to the specific document question
-                aiResponseText = ragChatService.askQuestion(roomName, question);
+                // FIX: Pass the conversational memory into the RAG service!
+                aiResponseText = ragChatService.askQuestion(roomName, question, memory.toString());
             } else {
-                // For General Chat, we inject the memory context!
-                String contextualPrompt = "You are a helpful AI assistant in a collaborative chat room. " +
-                        "Here is the recent conversation history for context:\n\n" +
-                        memory.toString() + "\n\n" +
-                        "Now, please respond to the latest message from " + chatMessage.getSender() + ": " + question;
-
-                // FIX: Always route through aiRouterService so both Groq and Gemini get
-                // real-time search!
-                aiResponseText = aiRouterService.getResponse(contextualPrompt);
+                // For General Chat, route through aiRouterService
+                aiResponseText = aiRouterService.getResponse(question, memory.toString());
             }
 
             // 4. Create and Broadcast Bot Response

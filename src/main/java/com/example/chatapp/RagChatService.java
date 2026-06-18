@@ -31,7 +31,8 @@ public class RagChatService {
         this.aiRouterService = aiRouterService;
     }
 
-    public String askQuestion(String roomId, String question) {
+    // FIX: Added 'memory' parameter to signature
+    public String askQuestion(String roomId, String question, String memory) {
         try {
             // 1. Convert the user's question into a mathematical vector
             String questionVector = embeddingAiService.generateEmbedding(question);
@@ -41,10 +42,10 @@ public class RagChatService {
             // 2. Perform Cosine Similarity Search in the Vector Database
             List<String> relevantChunks = chunkRepository.findSimilarChunks(roomId, questionVector);
 
-            // UPGRADED: If no relevant document chunks are found, route to general AI chat
-            // fallback
+            // UPGRADED: If no relevant document chunks are found, fallback successfully by
+            // passing BOTH args
             if (relevantChunks == null || relevantChunks.isEmpty()) {
-                return aiRouterService.getResponse(question);
+                return aiRouterService.getResponse(question, memory);
             }
 
             // 3. Combine the retrieved paragraphs into a single context block
@@ -54,13 +55,16 @@ public class RagChatService {
             String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key="
                     + apiKey;
 
-            String prompt = "You are an intelligent workspace assistant in a chat room. You have access to the following Document Context. "
+            // FIX: Injected conversational memory into the RAG Prompt
+            String prompt = "You are an intelligent workspace assistant in a chat room. You have access to the following Document Context.\n"
                     +
-                    "1. First, try to answer the user's question using ONLY the Document Context. " +
-                    "2. If the Document Context does not contain the answer, or if the user is just making casual conversation, IGNORE the context and answer naturally using your general AI knowledge. "
+                    "1. First, try to answer the user's question using ONLY the Document Context.\n" +
+                    "2. If the Document Context does not contain the answer, or if the user is just making casual conversation, IGNORE the context and answer naturally.\n"
                     +
-                    "3. Be helpful, concise, and friendly. \n\n" +
-                    "Context: " + context + "\n\nUser Message: " + question;
+                    "3. Be helpful, concise, and friendly.\n\n" +
+                    "Recent Conversation History:\n" + memory + "\n\n" +
+                    "Document Context:\n" + context + "\n\n" +
+                    "User Message: " + question;
 
             // --- Let Java build the JSON safely to prevent crashing ---
             java.util.Map<String, Object> textPart = new java.util.HashMap<>();
