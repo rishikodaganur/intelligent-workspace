@@ -21,22 +21,32 @@ public class AiRouterService {
 
     public String getResponse(String prompt) {
 
-        // 1. Get the current time
+        // 1. CLEAN THE PROMPT: Remove "@bot" so Tavily only searches the actual
+        // question
+        String cleanPrompt = prompt.replace("@bot", "").trim();
+
+        // 2. Get the current time
         ZonedDateTime nowLocal = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));
         String formattedDate = nowLocal.format(DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy 'at' h:mm a z"));
 
-        // 2. SEARCH THE WEB
-        // We pass the user's prompt directly to Tavily
-        String realTimeFacts = webSearchService.search(prompt);
+        // 3. SEARCH THE WEB
+        // We pass the clean prompt directly to Tavily
+        String realTimeFacts = webSearchService.search(cleanPrompt);
 
-        // 3. Build the Ultimate Context Block
+        // 4. PRINT TO LOGS: This lets us see what Tavily found in the Render dashboard!
+        System.out.println("\n--- TAVILY SEARCH RESULT ---");
+        System.out.println("Query sent to Tavily: " + cleanPrompt);
+        System.out.println("Result: " + realTimeFacts);
+        System.out.println("----------------------------\n");
+
+        // 5. Build the Ultimate Context Block
         String systemContext = "[System Context: The current date and time is " + formattedDate + ". " +
                 "Here is real-time web data regarding the user's query: " + realTimeFacts + " " +
                 "Use these facts to answer the user's prompt accurately.]\n\nUser Request: ";
 
         String enrichedPrompt = systemContext + prompt;
 
-        // 4. Route to Groq (with Gemini fallback)
+        // 6. Route to Groq (with Gemini fallback)
         try {
             String groqResponse = groqService.getAnswer(enrichedPrompt);
             if (groqResponse.contains("Sorry") && !groqResponse.contains("Gemini")) {
