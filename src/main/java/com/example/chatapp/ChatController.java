@@ -94,11 +94,9 @@ public class ChatController {
                         memory.toString() + "\n\n" +
                         "Now, please respond to the latest message from " + chatMessage.getSender() + ": " + question;
 
-                if ("gemini".equals(selectedModel)) {
-                    aiResponseText = aiRouterService.getResponse(contextualPrompt);
-                } else {
-                    aiResponseText = groqService.getAnswer(contextualPrompt);
-                }
+                // FIX: Always route through aiRouterService so both Groq and Gemini get
+                // real-time search!
+                aiResponseText = aiRouterService.getResponse(contextualPrompt);
             }
 
             // 4. Create and Broadcast Bot Response
